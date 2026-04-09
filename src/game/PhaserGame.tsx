@@ -23,9 +23,7 @@ export function PhaserGame({ onGameReady }: PhaserGameProps) {
 
     gameRef.current = game;
     (window as any).__PHASER_GAME__ = game;
-    onGameReady?.(game);
 
-    // Ensure canvas can receive keyboard focus
     game.events.on('ready', () => {
       const canvas = game.canvas;
       if (canvas) {
@@ -33,6 +31,7 @@ export function PhaserGame({ onGameReady }: PhaserGameProps) {
         canvas.style.outline = 'none';
         canvas.focus();
       }
+      onGameReady?.(game);
     });
 
     return () => {

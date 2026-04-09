@@ -4,7 +4,7 @@ export const phaserConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   pixelArt: true,
   roundPixels: true,
-  backgroundColor: '#2a3a2a',
+  backgroundColor: '#4a8a3a',
   scale: {
     mode: Phaser.Scale.RESIZE,
     width: '100%',

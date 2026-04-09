@@ -107,28 +107,57 @@ export function buildFloorLayer(): number[][] {
     }
   }
 
-  // Stone path from entrance southward to map edge
-  for (let row = 11; row < MAP_ROWS - 1; row++) {
-    grid[row][11] = TILES.STONE_PATH;
-    grid[row][12] = TILES.STONE_PATH;
-  }
-  // Stone path east from entrance to corridor
-  for (let col = 12; col < 29; col++) {
-    if (grid[10][col] === TILES.GRASS || grid[10][col] === TILES.GRASS_ALT) {
-      grid[10][col] = TILES.FLOOR_TILE;
+  // Outdoor winding trail for walking / sightseeing
+  const trail: [number, number][] = [
+    // South garden loop
+    [33, 8], [33, 9], [33, 10], [33, 11], [33, 12], [33, 13], [33, 14],
+    [34, 14], [34, 15], [34, 16], [34, 17], [34, 18], [34, 19], [34, 20],
+    [33, 20], [33, 21], [33, 22], [33, 23], [33, 24], [33, 25],
+    [34, 25], [34, 26], [34, 27], [34, 28], [34, 29], [34, 30],
+    [33, 30], [33, 31], [33, 32], [33, 33], [33, 34],
+    [34, 34], [34, 35], [34, 36], [35, 36], [35, 35],
+    [35, 34], [35, 33], [35, 32], [35, 31], [35, 30],
+    [35, 29], [35, 28], [35, 27], [35, 26], [35, 25],
+    [35, 24], [35, 23], [35, 22], [35, 21], [35, 20],
+    [35, 19], [35, 18], [35, 17], [35, 16], [35, 15],
+    [35, 14], [35, 13], [35, 12], [35, 11], [35, 10],
+    [35, 9], [35, 8], [34, 8],
+    // Left side path
+    [32, 3], [33, 3], [34, 3], [35, 3],
+    [32, 4], [33, 4], [34, 4], [35, 4],
+    // Right side path
+    [33, 53], [33, 54], [34, 53], [34, 54],
+    [35, 53], [35, 54], [32, 53], [32, 54],
+    // Top garden path
+    [2, 8], [2, 9], [2, 10], [2, 11], [2, 12], [2, 13], [2, 14],
+    [2, 15], [2, 16], [2, 17], [2, 18], [2, 19],
+    [2, 25], [2, 26], [2, 27], [2, 28],
+    [2, 50], [2, 51], [2, 52], [2, 53],
+    [3, 53], [3, 52],
+  ];
+  for (const [r, c] of trail) {
+    if (r >= 0 && r < MAP_ROWS && c >= 0 && c < MAP_COLS) {
+      if (grid[r][c] === TILES.GRASS || grid[r][c] === TILES.GRASS_ALT) {
+        grid[r][c] = TILES.STONE_PATH;
+      }
     }
   }
 
-  // Flower beds near entrance
-  grid[33][10] = TILES.FLOWER_BED;
-  grid[33][13] = TILES.FLOWER_BED;
-  grid[34][9] = TILES.FLOWER_BED;
-  grid[34][14] = TILES.FLOWER_BED;
-
-  // Flower beds near building corners
-  grid[3][4] = TILES.FLOWER_BED;
-  grid[3][17] = TILES.FLOWER_BED;
-  grid[3][27] = TILES.FLOWER_BED;
+  // Flower beds along the trails
+  const flowers: [number, number][] = [
+    [32, 9], [32, 13], [32, 20], [32, 25], [32, 30],
+    [36, 10], [36, 15], [36, 20], [36, 25], [36, 30], [36, 35],
+    [3, 4], [3, 17], [3, 27],
+    [1, 10], [1, 15], [1, 26],
+    [33, 37], [33, 42], [33, 48],
+  ];
+  for (const [r, c] of flowers) {
+    if (r >= 0 && r < MAP_ROWS && c >= 0 && c < MAP_COLS) {
+      if (grid[r][c] === TILES.GRASS || grid[r][c] === TILES.GRASS_ALT) {
+        grid[r][c] = TILES.FLOWER_BED;
+      }
+    }
+  }
 
   return grid;
 }

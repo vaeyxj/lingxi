@@ -40,9 +40,8 @@ export class OfficeScene extends Phaser.Scene {
   }
 
   create(): void {
-    // Setup camera
+    // Setup camera — no bounds restriction so the viewport can show the full map
     this.cameras.main.setZoom(DISPLAY_SCALE);
-    this.cameras.main.setBounds(0, 0, MAP_COLS * TILE_SIZE, MAP_ROWS * TILE_SIZE);
     this.cameras.main.setRoundPixels(true);
 
     // Build collision grid first (needed by player)
@@ -355,9 +354,9 @@ export class OfficeScene extends Phaser.Scene {
     const bg = this.add.rectangle(
       (MAP_COLS * TILE_SIZE) / 2,
       (MAP_ROWS * TILE_SIZE) / 2,
-      MAP_COLS * TILE_SIZE + 200,
-      MAP_ROWS * TILE_SIZE + 200,
-      0x3a3a42
+      MAP_COLS * TILE_SIZE + 2000,
+      MAP_ROWS * TILE_SIZE + 2000,
+      0x4a8a3a
     );
     bg.setDepth(-1);
   }
@@ -1144,10 +1143,19 @@ export class OfficeScene extends Phaser.Scene {
 
     // Keyboard shortcuts
     if (this.input.keyboard) {
-      // Space: re-center camera on player
+      // Space: zoom to player and follow
       this.input.keyboard.on('keydown-SPACE', () => {
         this.cameraFollowsPlayer = true;
-        this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
+        this.cameras.main.zoomTo(4, 400, 'Sine.easeInOut');
+        this.cameras.main.pan(
+          this.player.playerX, this.player.playerY,
+          400, 'Sine.easeInOut', false,
+          (_cam: Phaser.Cameras.Scene2D.Camera, _progress: number, complete: number) => {
+            if (complete === 1) {
+              this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
+            }
+          },
+        );
       });
 
       // +/= : zoom in

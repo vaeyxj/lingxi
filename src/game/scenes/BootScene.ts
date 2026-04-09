@@ -366,36 +366,37 @@ export class BootScene extends Phaser.Scene {
 
   private tGrassAlt(ctx: CanvasRenderingContext2D, i: number): void {
     const ox = i * TPX;
-    this.fill(ctx, i, '#52964A');
-    ctx.fillStyle = '#488A3E';
+    this.fill(ctx, i, '#589C46');
+    ctx.fillStyle = '#509442';
     const dots = [[6,4],[18,8],[10,20],[26,24],[3,28],[22,12],[14,16],[28,4]];
     for (const [x, y] of dots) {
-      ctx.fillRect(ox + x, y, 2, 2);
+      ctx.fillRect(ox + x, y, 1, 1);
     }
-    ctx.fillStyle = '#62A65A';
+    ctx.fillStyle = '#62A85A';
     const tufts = [[4,10],[16,6],[24,20],[8,26],[20,30]];
     for (const [x, y] of tufts) {
-      ctx.fillRect(ox + x, y, 1, 3);
+      ctx.fillRect(ox + x, y, 1, 2);
     }
   }
 
   private tFlowerBed(ctx: CanvasRenderingContext2D, i: number): void {
     const ox = i * TPX;
-    this.fill(ctx, i, '#4A7A3A');
-    ctx.fillStyle = '#3A5A2A';
-    ctx.fillRect(ox + 1, 1, 30, 30);
-    ctx.fillStyle = '#5A8A4A';
-    ctx.fillRect(ox + 2, 2, 28, 28);
+    this.fill(ctx, i, '#5B9F4A');
+    ctx.fillStyle = '#4E8F3E';
+    ctx.fillRect(ox + 5, 3, 2, 1);
+    ctx.fillRect(ox + 20, 15, 2, 1);
+    ctx.fillRect(ox + 10, 25, 2, 1);
     const flowers: [number, number, string][] = [
-      [8, 8, '#FF6B6B'], [16, 6, '#FFD93D'], [24, 10, '#FF6B6B'],
-      [6, 18, '#C084FC'], [14, 22, '#FF6B6B'], [22, 20, '#FFD93D'],
-      [10, 14, '#FFD93D'], [20, 16, '#C084FC'], [28, 26, '#FF6B6B'],
+      [8, 8, '#FF8888'], [16, 5, '#FFDD55'], [25, 10, '#FF8888'],
+      [5, 18, '#CC99FF'], [14, 22, '#FF8888'], [23, 20, '#FFDD55'],
+      [10, 13, '#FFDD55'], [20, 16, '#CC99FF'], [28, 26, '#FF8888'],
+      [4, 10, '#FFDD55'], [18, 28, '#CC99FF'],
     ];
     for (const [fx, fy, fc] of flowers) {
-      ctx.fillStyle = '#4A9A3A';
-      ctx.fillRect(ox + fx - 2, fy - 2, 4, 4);
       ctx.fillStyle = fc;
-      ctx.fillRect(ox + fx - 1, fy - 1, 2, 2);
+      ctx.fillRect(ox + fx, fy, 2, 2);
+      ctx.fillStyle = '#5AAA4A';
+      ctx.fillRect(ox + fx, fy + 2, 1, 1);
     }
   }
 

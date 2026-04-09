@@ -1,13 +1,26 @@
 import { useState, useCallback, useEffect } from 'react';
+import { LandingPage } from './ui/components/LandingPage';
 import { PhaserGame } from './game/PhaserGame';
 import { TopBar } from './ui/components/TopBar';
 import { EmployeeListPanel } from './ui/components/EmployeeListPanel';
 import { EmployeeDetail } from './ui/components/EmployeeDetail';
 import { ActivityLog } from './ui/components/ActivityLog';
 import './ui/styles/global.css';
+import './ui/styles/landing.css';
 import './ui/styles/panels.css';
 
 function App() {
+  const [entered, setEntered] = useState(false);
+  const [gameReady, setGameReady] = useState(false);
+
+  if (!entered) {
+    return <LandingPage onEnter={() => setEntered(true)} />;
+  }
+
+  return <GameView onReady={() => setGameReady(true)} ready={gameReady} />;
+}
+
+function GameView({ onReady, ready }: { onReady: () => void; ready: boolean }) {
   const [leftOpen, setLeftOpen] = useState(false);
   const [rightOpen, setRightOpen] = useState(false);
   const [hudVisible, setHudVisible] = useState(true);
@@ -39,7 +52,14 @@ function App() {
 
   return (
     <div className="app-container">
-      <PhaserGame />
+      <PhaserGame onGameReady={() => onReady()} />
+
+      {/* Loading overlay */}
+      {!ready && (
+        <div className="game-loading">
+          <div className="game-loading-text">加载世界中...</div>
+        </div>
+      )}
 
       <div className={`hud ${hudVisible ? 'hud-visible' : 'hud-hidden'}`}>
         <TopBar

@@ -5,6 +5,36 @@
   height: 100%;
 }
 
+/* ═══ Game Loading ═══ */
+.game-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0a0e1a;
+  animation: loadingFade 0.5s 1.5s ease forwards;
+  pointer-events: none;
+}
+
+.game-loading-text {
+  font-family: var(--pixel-font);
+  font-size: 12px;
+  color: var(--accent);
+  letter-spacing: 4px;
+  animation: loadingPulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes loadingPulse {
+  from { opacity: 0.4; }
+  to { opacity: 1; }
+}
+
+@keyframes loadingFade {
+  to { opacity: 0; }
+}
+
 /* ═══ Floating HUD ═══ */
 .hud {
   position: absolute;
