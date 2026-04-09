@@ -22,7 +22,18 @@ export function PhaserGame({ onGameReady }: PhaserGameProps) {
     });
 
     gameRef.current = game;
+    (window as any).__PHASER_GAME__ = game;
     onGameReady?.(game);
+
+    // Ensure canvas can receive keyboard focus
+    game.events.on('ready', () => {
+      const canvas = game.canvas;
+      if (canvas) {
+        canvas.tabIndex = 0;
+        canvas.style.outline = 'none';
+        canvas.focus();
+      }
+    });
 
     return () => {
       game.destroy(true);
@@ -34,6 +45,7 @@ export function PhaserGame({ onGameReady }: PhaserGameProps) {
     <div
       ref={containerRef}
       id="phaser-container"
+      onClick={() => gameRef.current?.canvas?.focus()}
       style={{
         position: 'absolute',
         top: 0,

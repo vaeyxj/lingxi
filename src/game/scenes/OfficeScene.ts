@@ -79,8 +79,18 @@ export class OfficeScene extends Phaser.Scene {
     this.effectsManager.setupZoneParticles(officeZones);
     this.setupDetailedEffects();
 
-    // Create player (spawn at entrance)
-    this.player = new Player(this, ENTRANCE_TILE.x, ENTRANCE_TILE.y + 2);
+    // Create player (spawn at walkable tile near entrance)
+    // Find first walkable tile near entrance
+    let spawnX = ENTRANCE_TILE.x;
+    let spawnY = ENTRANCE_TILE.y + 1;
+    for (let dy = 1; dy <= 4; dy++) {
+      const ty = ENTRANCE_TILE.y + dy;
+      if (ty < MAP_ROWS && collisionGrid[ty][ENTRANCE_TILE.x] === 0) {
+        spawnY = ty;
+        break;
+      }
+    }
+    this.player = new Player(this, spawnX, spawnY);
     this.player.setCollisionGrid(collisionGrid);
 
     // Camera follows player
@@ -101,8 +111,7 @@ export class OfficeScene extends Phaser.Scene {
     // Listen for events from React
     this.setupEventListeners();
 
-    // Vignette overlay for atmosphere
-    this.createVignette();
+    // No vignette - keep bright and clean like reference art
   }
 
   private setupDetailedEffects(): void {
@@ -137,7 +146,7 @@ export class OfficeScene extends Phaser.Scene {
       (MAP_ROWS * TILE_SIZE) / 2,
       MAP_COLS * TILE_SIZE + 200,
       MAP_ROWS * TILE_SIZE + 200,
-      0x0e0e1a
+      0x3a3a42
     );
     bg.setDepth(-1);
   }

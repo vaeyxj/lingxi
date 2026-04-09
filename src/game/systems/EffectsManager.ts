@@ -36,13 +36,13 @@ export class EffectsManager {
   private renderLighting(zones: OfficeZone[]): void {
     this.lightOverlay.clear();
 
-    // Subtle zone ambient tints (light touch, not overwhelming)
+    // Warm ambient tints matching reference art style
     const zoneAmbient: Record<string, { color: number; alpha: number }> = {
-      desk_area: { color: 0xe8eaff, alpha: 0.95 },
-      meeting_room: { color: 0xfff4e8, alpha: 0.95 },
-      coffee_area: { color: 0xffeed8, alpha: 0.93 },
-      reception: { color: 0xf0f4ff, alpha: 0.95 },
-      lunch_area: { color: 0xfff6e8, alpha: 0.94 },
+      desk_area: { color: 0xfff8f0, alpha: 0.93 },
+      meeting_room: { color: 0xfff4e5, alpha: 0.92 },
+      coffee_area: { color: 0xffedda, alpha: 0.90 },
+      reception: { color: 0xfff6ee, alpha: 0.93 },
+      lunch_area: { color: 0xfff2e2, alpha: 0.92 },
     };
 
     for (const zone of zones) {

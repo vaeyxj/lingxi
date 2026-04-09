@@ -6,10 +6,13 @@ export const phaserConfig: Phaser.Types.Core.GameConfig = {
   width: 800,
   height: 512,
   pixelArt: true,
-  backgroundColor: '#0e0e1a',
+  backgroundColor: '#3a3a42',
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
+  },
+  input: {
+    keyboard: true,
   },
   physics: {
     default: 'arcade',
