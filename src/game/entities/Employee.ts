@@ -134,11 +134,7 @@ export class Employee extends Phaser.GameObjects.Container {
       this.moveProgress = 0;
       this.isMoving = true;
     } else {
-      // Teleport if no path found
-      this.tileX = tileX;
-      this.tileY = tileY;
-      this.x = tileX * TILE_SIZE + TILE_SIZE / 2;
-      this.y = tileY * TILE_SIZE + TILE_SIZE / 2;
+      // No path found — stay in place, retry later
       this.isMoving = false;
     }
   }

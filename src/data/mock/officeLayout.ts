@@ -97,5 +97,5 @@ export const deskAssignments: DeskAssignment[] = [
   { deskId: 'desk-08', tileX: 15, tileY: 17, chairX: 15, chairY: 18 },
 ];
 
-// Entrance point where employees spawn
-export const ENTRANCE_TILE = { x: 6, y: 1 };
+// Entrance point where employees spawn (in hallway, walkable)
+export const ENTRANCE_TILE = { x: 6, y: 7 };

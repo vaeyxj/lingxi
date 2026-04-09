@@ -162,8 +162,8 @@ export class Player extends Phaser.GameObjects.Container {
 
     this.playerX = newX;
     this.playerY = newY;
-    this.x = this.playerX;
-    this.y = this.playerY;
+    this.x = Math.round(this.playerX);
+    this.y = Math.round(this.playerY);
 
     // Walking animation
     this.isMoving = moving;

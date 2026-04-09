@@ -48,8 +48,8 @@ export function buildFloorLayer(): number[][] {
     }
   }
 
-  // Hallways connecting zones
-  // Horizontal hallway between desk area and right zones
+  // === Hallways connecting all zones ===
+  // Main horizontal hallway (rows 7-8, full width)
   for (let col = 1; col < 48; col++) {
     for (let row = 7; row <= 8; row++) {
       if (grid[row][col] === TILES.EMPTY) {
@@ -57,7 +57,7 @@ export function buildFloorLayer(): number[][] {
       }
     }
   }
-  // Vertical hallway on right side
+  // Main vertical corridor (cols 24-25, full height)
   for (let row = 1; row < 30; row++) {
     for (let col = 24; col <= 25; col++) {
       if (grid[row][col] === TILES.EMPTY) {
@@ -65,10 +65,27 @@ export function buildFloorLayer(): number[][] {
       }
     }
   }
-  // Vertical hallway in desk area
+  // Secondary vertical hallway in desk area
   for (let row = 9; row < 23; row++) {
     if (grid[row][20] === TILES.EMPTY) grid[row][20] = TILES.FLOOR_CARPET;
     if (grid[row][21] === TILES.EMPTY) grid[row][21] = TILES.FLOOR_CARPET;
+  }
+  // Corridor extensions to reach left-side doors of right zones
+  // Connect vertical corridor (col 25) to meeting rooms, coffee area, lunch area
+  for (const zone of officeZones) {
+    if (zone.bounds.x > 24) {
+      const midY = Math.floor(zone.bounds.y + zone.bounds.height / 2);
+      // Ensure floor tile from corridor to zone left wall
+      for (let col = 24; col <= zone.bounds.x; col++) {
+        if (grid[midY][col] === TILES.EMPTY) {
+          grid[midY][col] = TILES.FLOOR_TILE;
+        }
+      }
+    }
+  }
+  // Connect reception bottom to hallway
+  for (let col = 1; col < 13; col++) {
+    if (grid[6][col] === TILES.EMPTY) grid[6][col] = TILES.FLOOR_TILE;
   }
 
   return grid;
@@ -103,16 +120,33 @@ export function buildWallLayer(): number[][] {
     grid[y + height - 1][x] = TILES.WALL_CORNER_BL;
     grid[y + height - 1][x + width - 1] = TILES.WALL_CORNER_BR;
 
-    // Add doors
+    // Add doors connecting to corridors
+    // Horizontal hallway is at rows 7-8, vertical corridor at cols 24-25
+    const midX = Math.floor(x + width / 2);
+    const midY = Math.floor(y + height / 2);
+
     if (zone.type === 'reception') {
-      grid[y][Math.floor(x + width / 2)] = TILES.DOOR;
-    }
-    if (zone.type === 'meeting_room' || zone.type === 'coffee_area' || zone.type === 'lunch_area') {
-      grid[y + height - 1][Math.floor(x + width / 2)] = TILES.DOOR;
+      // Bottom door → connects to horizontal hallway at row 7
+      grid[y + height - 1][midX] = TILES.DOOR;
     }
     if (zone.type === 'desk_area') {
-      grid[y][Math.floor(x + width / 2)] = TILES.DOOR;
-      grid[y + height - 1][Math.floor(x + width / 2)] = TILES.DOOR;
+      // Top door → connects to horizontal hallway at row 8
+      grid[y][midX] = TILES.DOOR;
+      // Bottom door for internal circulation
+      grid[y + height - 1][midX] = TILES.DOOR;
+    }
+    if (zone.type === 'meeting_room' || zone.type === 'coffee_area' || zone.type === 'lunch_area') {
+      // Left door → connects to vertical corridor at cols 24-25
+      if (x > 24) {
+        grid[midY][x] = TILES.DOOR;
+      }
+      // Also bottom/top door for hallway connection
+      if (zone.type === 'meeting_room') {
+        grid[y + height - 1][midX] = TILES.DOOR;
+      }
+      if (zone.type === 'lunch_area') {
+        grid[y][midX] = TILES.DOOR;
+      }
     }
   }
 

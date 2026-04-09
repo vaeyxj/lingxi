@@ -39,6 +39,7 @@ export class OfficeScene extends Phaser.Scene {
     // Setup camera
     this.cameras.main.setZoom(DISPLAY_SCALE);
     this.cameras.main.setBounds(0, 0, MAP_COLS * TILE_SIZE, MAP_ROWS * TILE_SIZE);
+    this.cameras.main.setRoundPixels(true);
 
     // Build collision grid first (needed by player)
     const collisionGrid = buildCollisionGrid();
@@ -159,8 +160,9 @@ export class OfficeScene extends Phaser.Scene {
         const tileIndex = grid[row][col];
         if (tileIndex === -1 || tileIndex === TILES.EMPTY) continue;
 
-        const x = col * TILE_SIZE + TILE_SIZE / 2;
-        const y = row * TILE_SIZE + TILE_SIZE / 2;
+        // Use integer positions to prevent sub-pixel seams
+        const x = Math.round(col * TILE_SIZE + TILE_SIZE / 2);
+        const y = Math.round(row * TILE_SIZE + TILE_SIZE / 2);
 
         const tile = this.add.image(x, y, 'tileset', tileIndex);
         tile.setScale(tileScale);

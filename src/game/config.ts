@@ -6,6 +6,7 @@ export const phaserConfig: Phaser.Types.Core.GameConfig = {
   width: 800,
   height: 512,
   pixelArt: true,
+  roundPixels: true,
   backgroundColor: '#3a3a42',
   scale: {
     mode: Phaser.Scale.FIT,

@@ -1,6 +1,8 @@
 import { useGameStore } from '../../shared/store/gameStore';
-import { useCurrentTime, useDayNumber, useTimeSpeed, useIsPaused, formatTime } from '../hooks/useGameStore';
+import { useCurrentTime, useTimeSpeed, useIsPaused, formatTime } from '../hooks/useGameStore';
 import type { TimeSpeed } from '../../shared/store/types';
+
+const WEEKDAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
 const ZONE_LABELS: Record<string, string> = {
   desk_area: '工位区',
@@ -12,8 +14,9 @@ const ZONE_LABELS: Record<string, string> = {
 
 export function TopBar() {
   const currentTime = useCurrentTime();
-  const dayNumber = useDayNumber();
   const timeSpeed = useTimeSpeed();
+  const now = new Date();
+  const dateStr = `${now.getMonth() + 1}月${now.getDate()}日 ${WEEKDAYS[now.getDay()]}`;
   const isPaused = useIsPaused();
   const playerZone = useGameStore((s) => s.playerZone);
 
@@ -31,7 +34,7 @@ export function TopBar() {
         )}
       </div>
       <div className="top-bar-section">
-        <span className="day-label">第 {dayNumber} 天</span>
+        <span className="day-label">{dateStr}</span>
         <span className="time-display">{formatTime(currentTime)}</span>
       </div>
       <div className="top-bar-section speed-controls">
