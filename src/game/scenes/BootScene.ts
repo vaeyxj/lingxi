@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 
-const SPRITE_TILE_SIZE = 32;
+const SPRITE_TILE_SIZE = 16;
 const CHARACTER_FRAME_W = 32;
 const CHARACTER_FRAME_H = 48;
 
