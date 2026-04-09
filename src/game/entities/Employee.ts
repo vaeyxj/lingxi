@@ -79,15 +79,15 @@ export class Employee extends Phaser.GameObjects.Container {
     const shadow = scene.add.ellipse(0, 6, 10, 4, 0x000000, 0.25);
     this.add(this.characterSprite);
 
-    // Name label
-    this.nameLabel = scene.add.text(0, 12, data.name, {
-      fontSize: '8px',
-      fontFamily: 'monospace',
+    // Name label - above head
+    this.nameLabel = scene.add.text(0, -18, data.name, {
+      fontSize: '7px',
+      fontFamily: '-apple-system, "PingFang SC", "Microsoft YaHei", sans-serif',
       color: '#ffffff',
       stroke: '#000000',
       strokeThickness: 2,
     });
-    this.nameLabel.setOrigin(0.5, 0);
+    this.nameLabel.setOrigin(0.5, 1);
     this.add(this.nameLabel);
 
     // Thought bubble

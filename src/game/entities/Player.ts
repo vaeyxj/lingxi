@@ -10,7 +10,6 @@ export type PlayerDirection = 'down' | 'up' | 'left' | 'right';
 export class Player extends Phaser.GameObjects.Container {
   private characterSprite: Phaser.GameObjects.Image;
   private shadow: Phaser.GameObjects.Ellipse;
-  private nameLabel: Phaser.GameObjects.Text;
   private indicator: Phaser.GameObjects.Graphics;
 
   private collisionGrid: number[][] = [];
@@ -41,17 +40,7 @@ export class Player extends Phaser.GameObjects.Container {
     this.characterSprite.setScale(0.35);
     this.add(this.characterSprite);
 
-    // Name label
-    this.nameLabel = scene.add.text(0, 14, '我', {
-      fontSize: '8px',
-      fontFamily: 'monospace',
-      color: '#ffdd44',
-      stroke: '#000000',
-      strokeThickness: 2,
-      fontStyle: 'bold',
-    });
-    this.nameLabel.setOrigin(0.5, 0);
-    this.add(this.nameLabel);
+    // No name label for player character
 
     // Player indicator arrow
     this.indicator = scene.add.graphics();

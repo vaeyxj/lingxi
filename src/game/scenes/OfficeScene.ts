@@ -13,6 +13,7 @@ import { DayCycleManager } from '../systems/DayCycleManager';
 import { EffectsManager } from '../systems/EffectsManager';
 import { Employee } from '../entities/Employee';
 import { Player } from '../entities/Player';
+import { Minimap } from '../ui/Minimap';
 import { useGameStore } from '../../shared/store/gameStore';
 import { officeZones, deskAssignments, ENTRANCE_TILE } from '../../data/mock/officeLayout';
 import { mockEmployees } from '../../data/mock/employees';
@@ -25,6 +26,7 @@ export class OfficeScene extends Phaser.Scene {
   private effectsManager!: EffectsManager;
   private player!: Player;
   private employees: Employee[] = [];
+  private minimap!: Minimap;
   private isDragging = false;
   private dragStartX = 0;
   private dragStartY = 0;
@@ -55,13 +57,7 @@ export class OfficeScene extends Phaser.Scene {
     this.renderTileLayer(wallGrid, 1);
     this.renderTileLayer(furnitureGrid, 2);
 
-    // Add animated effects for special tiles
-    for (let row = 0; row < MAP_ROWS; row++) {
-      for (let col = 0; col < MAP_COLS; col++) {
-        if (wallGrid[row][col] !== -1) this.addTileEffects(col, row, wallGrid[row][col], 1);
-        if (furnitureGrid[row][col] !== -1) this.addTileEffects(col, row, furnitureGrid[row][col], 2);
-      }
-    }
+    // Tile sprites have built-in visual details, no extra effects needed
 
     // Render zone labels
     this.renderZoneLabels();
@@ -106,13 +102,14 @@ export class OfficeScene extends Phaser.Scene {
     // Start day
     this.dayCycleManager.startNewDay();
 
-    // Setup camera controls
+    // Setup camera controls (includes keyboard zoom shortcuts)
     this.setupCameraControls();
+
+    // Setup minimap
+    this.minimap = new Minimap(this, officeZones);
 
     // Listen for events from React
     this.setupEventListeners();
-
-    // No vignette - keep bright and clean like reference art
   }
 
   private setupDetailedEffects(): void {
@@ -153,19 +150,15 @@ export class OfficeScene extends Phaser.Scene {
   }
 
   private renderTileLayer(grid: number[][], depth: number): void {
-    const tileScale = TILE_SIZE / 32; // tileset frames are 32x32, scale to TILE_SIZE
-
     for (let row = 0; row < MAP_ROWS; row++) {
       for (let col = 0; col < MAP_COLS; col++) {
         const tileIndex = grid[row][col];
         if (tileIndex === -1 || tileIndex === TILES.EMPTY) continue;
 
-        // Use integer positions to prevent sub-pixel seams
-        const x = Math.round(col * TILE_SIZE + TILE_SIZE / 2);
-        const y = Math.round(row * TILE_SIZE + TILE_SIZE / 2);
+        const x = col * TILE_SIZE + TILE_SIZE / 2;
+        const y = row * TILE_SIZE + TILE_SIZE / 2;
 
         const tile = this.add.image(x, y, 'tileset', tileIndex);
-        tile.setScale(tileScale);
         tile.setDepth(depth);
       }
     }
@@ -265,13 +258,34 @@ export class OfficeScene extends Phaser.Scene {
       this.cameras.main.setZoom(newZoom);
     });
 
-    // Press Space to re-center camera on player
+    // Keyboard shortcuts
     if (this.input.keyboard) {
+      // Space: re-center camera on player
       this.input.keyboard.on('keydown-SPACE', () => {
         this.cameraFollowsPlayer = true;
         this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
       });
+
+      // +/= : zoom in
+      this.input.keyboard.on('keydown-PLUS', () => this.adjustZoom(0.5));
+      this.input.keyboard.on('keydown-NUMPAD_ADD', () => this.adjustZoom(0.5));
+      // Use key code for '=' key (same physical key as '+' without shift)
+      this.input.keyboard.on('keydown-EQUAL', () => this.adjustZoom(0.5));
+
+      // - : zoom out
+      this.input.keyboard.on('keydown-MINUS', () => this.adjustZoom(-0.5));
+      this.input.keyboard.on('keydown-NUMPAD_SUBTRACT', () => this.adjustZoom(-0.5));
+
+      // 0 : reset zoom
+      this.input.keyboard.on('keydown-ZERO', () => {
+        this.cameras.main.setZoom(DISPLAY_SCALE);
+      });
     }
+  }
+
+  private adjustZoom(delta: number): void {
+    const newZoom = Phaser.Math.Clamp(this.cameras.main.zoom + delta, 2.5, 8);
+    this.cameras.main.setZoom(newZoom);
   }
 
   private setupEventListeners(): void {
@@ -329,5 +343,12 @@ export class OfficeScene extends Phaser.Scene {
 
     // Update effects
     this.effectsManager.update(delta);
+
+    // Update minimap
+    const minimapTargets = [
+      { x: this.player.playerX, y: this.player.playerY, isMoving: this.player.isMoving, isPlayer: true },
+      ...this.employees.map((e) => ({ x: e.x, y: e.y, isMoving: e.isMoving, isPlayer: false })),
+    ];
+    this.minimap.update(minimapTargets);
   }
 }
