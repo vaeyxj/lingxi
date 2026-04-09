@@ -43,6 +43,10 @@ export class EffectsManager {
       coffee_area: { color: 0xffedda, alpha: 0.90 },
       reception: { color: 0xfff6ee, alpha: 0.93 },
       lunch_area: { color: 0xfff2e2, alpha: 0.92 },
+      phone_booth: { color: 0xfff4dc, alpha: 0.90 },
+      supermarket: { color: 0xffffff, alpha: 0.95 },
+      restroom: { color: 0xf0f4ff, alpha: 0.94 },
+      gym: { color: 0xfff0e0, alpha: 0.92 },
     };
 
     for (const zone of zones) {
@@ -62,7 +66,6 @@ export class EffectsManager {
   setupZoneParticles(zones: OfficeZone[]): void {
     for (const zone of zones) {
       if (zone.type === 'coffee_area') {
-        // Steam particles from coffee machine
         const { x, y } = zone.bounds;
         this.addParticleEmitter(
           (x + 2) * TILE_SIZE,
@@ -71,7 +74,115 @@ export class EffectsManager {
           zone
         );
       }
+      if (zone.type === 'meeting_room') {
+        this.addMeetingRoomAmbience(zone);
+      }
+      if (zone.type === 'phone_booth') {
+        this.addPhoneBoothAmbience(zone);
+      }
+      if (zone.type === 'supermarket') {
+        this.addSupermarketAmbience(zone);
+      }
+      if (zone.type === 'gym') {
+        this.addGymAmbience(zone);
+      }
     }
+  }
+
+  private addSupermarketAmbience(zone: OfficeZone): void {
+    const { x, y, width } = zone.bounds;
+    const cx = (x + width / 2) * TILE_SIZE;
+    const cy = (y + 1) * TILE_SIZE;
+
+    const light = this.scene.add.graphics();
+    light.setDepth(2.2);
+
+    this.scene.tweens.add({
+      targets: { val: 0 },
+      val: 1,
+      duration: 2000,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+      onUpdate: (tween) => {
+        light.clear();
+        const v = tween.getValue() as number;
+        light.fillStyle(0xffffff, 0.04 + v * 0.02);
+        light.fillCircle(cx, cy + 8, 18 + v * 3);
+      },
+    });
+  }
+
+  private addGymAmbience(zone: OfficeZone): void {
+    const { x, y, width, height } = zone.bounds;
+    const cx = (x + width / 2) * TILE_SIZE;
+    const cy = (y + height / 2) * TILE_SIZE;
+
+    const glow = this.scene.add.graphics();
+    glow.setDepth(2.2);
+
+    this.scene.tweens.add({
+      targets: { val: 0 },
+      val: 1,
+      duration: 1500,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+      onUpdate: (tween) => {
+        glow.clear();
+        const v = tween.getValue() as number;
+        glow.fillStyle(0xffaa44, 0.03 + v * 0.02);
+        glow.fillCircle(cx, cy, 16 + v * 4);
+      },
+    });
+  }
+
+  private addMeetingRoomAmbience(zone: OfficeZone): void {
+    const { x, y, width, height } = zone.bounds;
+    const cx = (x + width / 2) * TILE_SIZE;
+    const cy = (y + height / 2) * TILE_SIZE;
+
+    const glow = this.scene.add.graphics();
+    glow.setDepth(2.2);
+
+    this.scene.tweens.add({
+      targets: { val: 0 },
+      val: 1,
+      duration: 3000 + Math.random() * 1000,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+      onUpdate: (tween) => {
+        glow.clear();
+        const v = tween.getValue() as number;
+        glow.fillStyle(0x6688cc, 0.03 + v * 0.02);
+        glow.fillCircle(cx, cy - 4, 20 + v * 4);
+      },
+    });
+  }
+
+  private addPhoneBoothAmbience(zone: OfficeZone): void {
+    const { x, y, width } = zone.bounds;
+    const cx = (x + width / 2) * TILE_SIZE;
+    const cy = (y + 1) * TILE_SIZE;
+
+    const indicator = this.scene.add.graphics();
+    indicator.setDepth(2.8);
+
+    this.scene.tweens.add({
+      targets: { val: 0 },
+      val: 1,
+      duration: 1200,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+      onUpdate: (tween) => {
+        indicator.clear();
+        const v = tween.getValue() as number;
+        indicator.fillStyle(0x44aa44, 0.3 + v * 0.2);
+        indicator.fillCircle(cx, cy + 4, 1 + v * 0.3);
+      },
+    });
   }
 
   private addParticleEmitter(px: number, py: number, type: string, _zone: OfficeZone): void {

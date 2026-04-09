@@ -1,16 +1,14 @@
 import Phaser from 'phaser';
-import { MAP_WIDTH_PX, MAP_HEIGHT_PX, DISPLAY_SCALE } from '../shared/constants';
 
 export const phaserConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 512,
   pixelArt: true,
   roundPixels: true,
-  backgroundColor: '#3a3a42',
+  backgroundColor: '#2a3a2a',
   scale: {
-    mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
+    mode: Phaser.Scale.RESIZE,
+    width: '100%',
+    height: '100%',
   },
   input: {
     keyboard: true,
@@ -22,5 +20,5 @@ export const phaserConfig: Phaser.Types.Core.GameConfig = {
       debug: false,
     },
   },
-  scene: [], // scenes added dynamically
+  scene: [],
 };

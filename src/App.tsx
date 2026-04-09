@@ -1,3 +1,4 @@
+import { useState, useCallback, useEffect } from 'react';
 import { PhaserGame } from './game/PhaserGame';
 import { TopBar } from './ui/components/TopBar';
 import { EmployeeListPanel } from './ui/components/EmployeeListPanel';
@@ -7,22 +8,64 @@ import './ui/styles/global.css';
 import './ui/styles/panels.css';
 
 function App() {
+  const [leftOpen, setLeftOpen] = useState(false);
+  const [rightOpen, setRightOpen] = useState(false);
+  const [hudVisible, setHudVisible] = useState(true);
+
+  const toggleLeft = useCallback(() => setLeftOpen((v) => !v), []);
+  const toggleRight = useCallback(() => setRightOpen((v) => !v), []);
+  const hideAll = useCallback(() => {
+    setHudVisible(false);
+    setLeftOpen(false);
+    setRightOpen(false);
+  }, []);
+  const showHud = useCallback(() => setHudVisible(true), []);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' || e.key === 'h' || e.key === 'H') {
+        if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+        setHudVisible((v) => {
+          if (!v) return true;
+          setLeftOpen(false);
+          setRightOpen(false);
+          return false;
+        });
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   return (
     <div className="app-container">
       <PhaserGame />
-      <div className="ui-overlay">
-        <TopBar />
-        <div className="main-area">
-          <div className="sidebar-left">
-            <EmployeeListPanel />
-          </div>
-          <div className="center-spacer" />
-          <div className="sidebar-right">
-            <EmployeeDetail />
-            <ActivityLog />
-          </div>
-        </div>
+
+      <div className={`hud ${hudVisible ? 'hud-visible' : 'hud-hidden'}`}>
+        <TopBar
+          leftOpen={leftOpen}
+          rightOpen={rightOpen}
+          onToggleLeft={toggleLeft}
+          onToggleRight={toggleRight}
+          onHideAll={hideAll}
+        />
       </div>
+
+      <div className={`slide-panel slide-left ${leftOpen ? 'open' : ''}`}>
+        <EmployeeListPanel />
+      </div>
+
+      <div className={`slide-panel slide-right ${rightOpen ? 'open' : ''}`}>
+        <EmployeeDetail />
+        <ActivityLog />
+      </div>
+
+      {!hudVisible && (
+        <div className="immersion-hint" onClick={showHud}>
+          <div className="immersion-hint-bar" />
+          <span className="immersion-hint-text">点击此处或按 H 键显示菜单</span>
+        </div>
+      )}
     </div>
   );
 }

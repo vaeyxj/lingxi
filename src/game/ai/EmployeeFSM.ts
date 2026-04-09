@@ -141,6 +141,104 @@ export class EmployeeFSM {
       },
     });
 
+    this.states.set('phone_call', {
+      enter: () => {
+        this.employee.setThoughtBubble('📞');
+        this.employee.activityTimer = 0;
+        this.employee.activityDuration = 5 + Math.random() * 15;
+        this.employee.logActivity('去打电话');
+      },
+      update: (dt: number) => {
+        this.employee.activityTimer += dt;
+        this.employee.updateAttributes({
+          energy: -0.1 * dt,
+          mood: 0.3 * dt,
+          productivity: 0,
+        });
+        if (this.employee.activityTimer >= this.employee.activityDuration) {
+          this.employee.walkToDesk();
+          this.employee.pendingActivity = 'working';
+          this.transition('walking');
+        }
+      },
+      exit: () => {
+        this.employee.logActivity('电话结束');
+      },
+    });
+
+    this.states.set('shopping', {
+      enter: () => {
+        this.employee.setThoughtBubble('🛒');
+        this.employee.activityTimer = 0;
+        this.employee.activityDuration = 5 + Math.random() * 10;
+        this.employee.logActivity('去超市购物');
+      },
+      update: (dt: number) => {
+        this.employee.activityTimer += dt;
+        this.employee.updateAttributes({
+          energy: -0.2 * dt,
+          mood: 1.0 * dt,
+          productivity: 0,
+        });
+        if (this.employee.activityTimer >= this.employee.activityDuration) {
+          this.employee.walkToDesk();
+          this.employee.pendingActivity = 'working';
+          this.transition('walking');
+        }
+      },
+      exit: () => {
+        this.employee.logActivity('购物结束');
+      },
+    });
+
+    this.states.set('restroom', {
+      enter: () => {
+        this.employee.setThoughtBubble('🚻');
+        this.employee.activityTimer = 0;
+        this.employee.activityDuration = 2 + Math.random() * 5;
+        this.employee.logActivity('去卫生间');
+      },
+      update: (dt: number) => {
+        this.employee.activityTimer += dt;
+        this.employee.updateAttributes({
+          energy: 1.0 * dt,
+          mood: 0.2 * dt,
+          productivity: 0,
+        });
+        if (this.employee.activityTimer >= this.employee.activityDuration) {
+          this.employee.walkToDesk();
+          this.employee.pendingActivity = 'working';
+          this.transition('walking');
+        }
+      },
+      exit: () => {},
+    });
+
+    this.states.set('exercising', {
+      enter: () => {
+        this.employee.setThoughtBubble('💪');
+        this.employee.activityTimer = 0;
+        this.employee.activityDuration = 15 + Math.random() * 20;
+        this.employee.logActivity('去健身');
+      },
+      update: (dt: number) => {
+        this.employee.activityTimer += dt;
+        this.employee.updateAttributes({
+          energy: 2.5 * dt,
+          mood: 1.5 * dt,
+          productivity: 0.2 * dt,
+        });
+        if (this.employee.activityTimer >= this.employee.activityDuration) {
+          this.employee.walkToDesk();
+          this.employee.pendingActivity = 'working';
+          this.transition('walking');
+        }
+      },
+      exit: () => {
+        this.employee.logActivity('健身结束');
+      },
+    });
+
     this.states.set('idle', {
       enter: () => {
         this.employee.setThoughtBubble('💤');

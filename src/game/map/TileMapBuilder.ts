@@ -1,7 +1,6 @@
-import { MAP_COLS, MAP_ROWS, TILE_SIZE } from '../../shared/constants';
+import { MAP_COLS, MAP_ROWS } from '../../shared/constants';
 import { officeZones, deskAssignments } from '../../data/mock/officeLayout';
 
-// Tile indices in our generated tileset
 export const TILES = {
   EMPTY: 0,
   FLOOR_CARPET: 1,
@@ -23,6 +22,10 @@ export const TILES = {
   WINDOW: 17,
   LUNCH_TABLE: 18,
   RECEPTION_DESK: 19,
+  GRASS: 20,
+  STONE_PATH: 21,
+  GRASS_ALT: 22,
+  FLOWER_BED: 23,
 } as const;
 
 const ZONE_FLOORS: Record<string, number> = {
@@ -31,6 +34,10 @@ const ZONE_FLOORS: Record<string, number> = {
   coffee_area: TILES.FLOOR_TILE,
   reception: TILES.FLOOR_TILE,
   lunch_area: TILES.FLOOR_TILE,
+  phone_booth: TILES.FLOOR_WOOD,
+  supermarket: TILES.FLOOR_TILE,
+  restroom: TILES.FLOOR_TILE,
+  gym: TILES.FLOOR_WOOD,
 };
 
 export function buildFloorLayer(): number[][] {
@@ -38,6 +45,7 @@ export function buildFloorLayer(): number[][] {
     Array(MAP_COLS).fill(TILES.EMPTY)
   );
 
+  // Zone floors
   for (const zone of officeZones) {
     const floorTile = ZONE_FLOORS[zone.type] ?? TILES.FLOOR_CARPET;
     const { x, y, width, height } = zone.bounds;
@@ -48,45 +56,79 @@ export function buildFloorLayer(): number[][] {
     }
   }
 
-  // === Hallways connecting all zones ===
-  // Main horizontal hallway (rows 7-8, full width)
-  for (let col = 1; col < 48; col++) {
-    for (let row = 7; row <= 8; row++) {
+  // Main horizontal hallway (rows 10-11)
+  for (let col = 5; col < 52; col++) {
+    for (let row = 10; row <= 11; row++) {
       if (grid[row][col] === TILES.EMPTY) {
         grid[row][col] = TILES.FLOOR_TILE;
       }
     }
   }
-  // Main vertical corridor (cols 24-25, full height)
-  for (let row = 1; row < 30; row++) {
-    for (let col = 24; col <= 25; col++) {
+
+  // Main vertical corridor (cols 28-29)
+  for (let row = 4; row < 33; row++) {
+    for (let col = 28; col <= 29; col++) {
       if (grid[row][col] === TILES.EMPTY) {
         grid[row][col] = TILES.FLOOR_TILE;
       }
     }
   }
-  // Secondary vertical hallway in desk area
-  for (let row = 9; row < 23; row++) {
-    if (grid[row][20] === TILES.EMPTY) grid[row][20] = TILES.FLOOR_CARPET;
-    if (grid[row][21] === TILES.EMPTY) grid[row][21] = TILES.FLOOR_CARPET;
+
+  // Secondary vertical hallway inside desk area
+  for (let row = 12; row < 26; row++) {
+    if (grid[row][24] === TILES.EMPTY) grid[row][24] = TILES.FLOOR_CARPET;
+    if (grid[row][25] === TILES.EMPTY) grid[row][25] = TILES.FLOOR_CARPET;
   }
-  // Corridor extensions to reach left-side doors of right zones
-  // Connect vertical corridor (col 25) to meeting rooms, coffee area, lunch area
+
+  // Corridor extensions to right-side zones
   for (const zone of officeZones) {
-    if (zone.bounds.x > 24) {
+    if (zone.bounds.x > 28) {
       const midY = Math.floor(zone.bounds.y + zone.bounds.height / 2);
-      // Ensure floor tile from corridor to zone left wall
-      for (let col = 24; col <= zone.bounds.x; col++) {
+      for (let col = 28; col <= zone.bounds.x; col++) {
         if (grid[midY][col] === TILES.EMPTY) {
           grid[midY][col] = TILES.FLOOR_TILE;
         }
       }
     }
   }
+
   // Connect reception bottom to hallway
-  for (let col = 1; col < 13; col++) {
-    if (grid[6][col] === TILES.EMPTY) grid[6][col] = TILES.FLOOR_TILE;
+  for (let col = 5; col < 17; col++) {
+    if (grid[9][col] === TILES.EMPTY) grid[9][col] = TILES.FLOOR_TILE;
   }
+
+  // Fill outdoor areas with grass (everything that's still EMPTY within the campus)
+  for (let row = 1; row < MAP_ROWS - 1; row++) {
+    for (let col = 1; col < MAP_COLS - 1; col++) {
+      if (grid[row][col] === TILES.EMPTY) {
+        const useAlt = ((row * 7 + col * 13) % 5) === 0;
+        grid[row][col] = useAlt ? TILES.GRASS_ALT : TILES.GRASS;
+      }
+    }
+  }
+
+  // Stone path from entrance southward to map edge
+  for (let row = 11; row < MAP_ROWS - 1; row++) {
+    grid[row][11] = TILES.STONE_PATH;
+    grid[row][12] = TILES.STONE_PATH;
+  }
+  // Stone path east from entrance to corridor
+  for (let col = 12; col < 29; col++) {
+    if (grid[10][col] === TILES.GRASS || grid[10][col] === TILES.GRASS_ALT) {
+      grid[10][col] = TILES.FLOOR_TILE;
+    }
+  }
+
+  // Flower beds near entrance
+  grid[33][10] = TILES.FLOWER_BED;
+  grid[33][13] = TILES.FLOWER_BED;
+  grid[34][9] = TILES.FLOWER_BED;
+  grid[34][14] = TILES.FLOWER_BED;
+
+  // Flower beds near building corners
+  grid[3][4] = TILES.FLOWER_BED;
+  grid[3][17] = TILES.FLOWER_BED;
+  grid[3][27] = TILES.FLOWER_BED;
 
   return grid;
 }
@@ -98,55 +140,47 @@ export function buildWallLayer(): number[][] {
 
   for (const zone of officeZones) {
     const { x, y, width, height } = zone.bounds;
-    // Top wall
     for (let col = x; col < x + width; col++) {
       grid[y][col] = TILES.WALL_H;
     }
-    // Bottom wall
     for (let col = x; col < x + width; col++) {
       grid[y + height - 1][col] = TILES.WALL_H;
     }
-    // Left wall
     for (let row = y; row < y + height; row++) {
       grid[row][x] = TILES.WALL_V;
     }
-    // Right wall
     for (let row = y; row < y + height; row++) {
       grid[row][x + width - 1] = TILES.WALL_V;
     }
-    // Corners
     grid[y][x] = TILES.WALL_CORNER_TL;
     grid[y][x + width - 1] = TILES.WALL_CORNER_TR;
     grid[y + height - 1][x] = TILES.WALL_CORNER_BL;
     grid[y + height - 1][x + width - 1] = TILES.WALL_CORNER_BR;
 
-    // Add doors connecting to corridors
-    // Horizontal hallway is at rows 7-8, vertical corridor at cols 24-25
     const midX = Math.floor(x + width / 2);
     const midY = Math.floor(y + height / 2);
 
     if (zone.type === 'reception') {
-      // Bottom door → connects to horizontal hallway at row 7
       grid[y + height - 1][midX] = TILES.DOOR;
     }
     if (zone.type === 'desk_area') {
-      // Top door → connects to horizontal hallway at row 8
       grid[y][midX] = TILES.DOOR;
-      // Bottom door for internal circulation
       grid[y + height - 1][midX] = TILES.DOOR;
     }
-    if (zone.type === 'meeting_room' || zone.type === 'coffee_area' || zone.type === 'lunch_area') {
-      // Left door → connects to vertical corridor at cols 24-25
-      if (x > 24) {
+    const rightSideTypes = ['meeting_room', 'coffee_area', 'lunch_area', 'supermarket', 'restroom', 'gym'];
+    if (rightSideTypes.includes(zone.type)) {
+      if (x > 28) {
         grid[midY][x] = TILES.DOOR;
       }
-      // Also bottom/top door for hallway connection
-      if (zone.type === 'meeting_room') {
+      if (zone.type === 'meeting_room' || zone.type === 'supermarket') {
         grid[y + height - 1][midX] = TILES.DOOR;
       }
-      if (zone.type === 'lunch_area') {
+      if (zone.type === 'lunch_area' || zone.type === 'gym') {
         grid[y][midX] = TILES.DOOR;
       }
+    }
+    if (zone.type === 'phone_booth') {
+      grid[y + height - 1][midX] = TILES.DOOR;
     }
   }
 
@@ -158,9 +192,12 @@ export function buildFurnitureLayer(): number[][] {
     Array(MAP_COLS).fill(-1)
   );
 
-  // Place desks and chairs
+  // Desks (2 tiles wide) and chairs
   for (const desk of deskAssignments) {
     grid[desk.tileY][desk.tileX] = TILES.DESK;
+    if (desk.tileX + 1 < MAP_COLS) {
+      grid[desk.tileY][desk.tileX + 1] = TILES.DESK;
+    }
     grid[desk.chairY][desk.chairX] = TILES.CHAIR;
   }
 
@@ -179,12 +216,23 @@ export function buildFurnitureLayer(): number[][] {
     }
     if (zone.type === 'lunch_area') {
       const { x, y } = zone.bounds;
-      grid[y + 2][x + 2] = TILES.LUNCH_TABLE;
-      grid[y + 2][x + 5] = TILES.LUNCH_TABLE;
-      grid[y + 2][x + 8] = TILES.LUNCH_TABLE;
-      grid[y + 5][x + 2] = TILES.LUNCH_TABLE;
-      grid[y + 5][x + 5] = TILES.LUNCH_TABLE;
-      grid[y + 5][x + 8] = TILES.LUNCH_TABLE;
+      grid[y + 3][x + 3] = TILES.LUNCH_TABLE;
+      grid[y + 3][x + 7] = TILES.LUNCH_TABLE;
+      grid[y + 7][x + 3] = TILES.LUNCH_TABLE;
+      grid[y + 7][x + 7] = TILES.LUNCH_TABLE;
+    }
+    if (zone.type === 'supermarket') {
+      const { x, y } = zone.bounds;
+      grid[y + 2][x + 2] = TILES.BOOKSHELF;
+      grid[y + 2][x + 5] = TILES.BOOKSHELF;
+      grid[y + 4][x + 2] = TILES.BOOKSHELF;
+      grid[y + 4][x + 5] = TILES.BOOKSHELF;
+      grid[y + 1][x + 7] = TILES.PLANT;
+    }
+    if (zone.type === 'gym') {
+      const { x, y } = zone.bounds;
+      grid[y + 1][x + 1] = TILES.PLANT;
+      grid[y + 1][x + 5] = TILES.PLANT;
     }
     if (zone.type === 'reception') {
       const { x, y } = zone.bounds;
@@ -196,9 +244,18 @@ export function buildFurnitureLayer(): number[][] {
     }
   }
 
-  // Decorative plants along hallway
-  grid[7][23] = TILES.PLANT;
-  grid[8][0] = TILES.PLANT;
+  // Outdoor plants / trees along perimeter
+  grid[10][27] = TILES.PLANT;
+  grid[3][8] = TILES.PLANT;
+  grid[3][50] = TILES.PLANT;
+  grid[35][8] = TILES.PLANT;
+  grid[35][20] = TILES.PLANT;
+  grid[35][40] = TILES.PLANT;
+  grid[35][50] = TILES.PLANT;
+  grid[2][2] = TILES.PLANT;
+  grid[2][55] = TILES.PLANT;
+  grid[36][2] = TILES.PLANT;
+  grid[36][55] = TILES.PLANT;
 
   return grid;
 }
@@ -209,24 +266,21 @@ export function buildCollisionGrid(): number[][] {
   const floor = buildFloorLayer();
 
   const grid: number[][] = Array.from({ length: MAP_ROWS }, () =>
-    Array(MAP_COLS).fill(1) // 1 = blocked by default
+    Array(MAP_COLS).fill(1)
   );
 
   for (let row = 0; row < MAP_ROWS; row++) {
     for (let col = 0; col < MAP_COLS; col++) {
-      // Has floor and no wall/furniture = walkable
       const hasFloor = floor[row][col] !== TILES.EMPTY;
       const hasWall = walls[row][col] !== -1 && walls[row][col] !== TILES.DOOR;
       const hasFurniture = furniture[row][col] !== -1 && furniture[row][col] !== TILES.CHAIR;
 
       if (hasFloor && !hasWall && !hasFurniture) {
-        grid[row][col] = 0; // walkable
+        grid[row][col] = 0;
       }
-      // Doors are walkable
       if (walls[row][col] === TILES.DOOR) {
         grid[row][col] = 0;
       }
-      // Chairs are walkable (employees sit there)
       if (furniture[row][col] === TILES.CHAIR) {
         grid[row][col] = 0;
       }

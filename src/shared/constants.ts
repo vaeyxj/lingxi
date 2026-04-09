@@ -1,6 +1,6 @@
 export const TILE_SIZE = 16;
-export const MAP_COLS = 50;
-export const MAP_ROWS = 32;
+export const MAP_COLS = 58;
+export const MAP_ROWS = 38;
 export const DISPLAY_SCALE = 2;
 export const ZOOM_MIN = 1.0;
 export const ZOOM_MAX = 6;
@@ -30,4 +30,5 @@ export const ZONE_COLORS: Record<string, number> = {
   coffee_area: 0xc4a35a,
   reception: 0x7bc67e,
   lunch_area: 0xd4956a,
+  phone_booth: 0x9a7ec6,
 };

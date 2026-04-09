@@ -9,6 +9,10 @@ const ACTIVITY_LABELS: Record<EmployeeActivity, string> = {
   meeting: '开会中',
   coffee_break: '喝咖啡',
   lunch: '午餐中',
+  phone_call: '打电话',
+  shopping: '购物中',
+  restroom: '上卫生间',
+  exercising: '健身中',
   idle: '空闲',
   walking: '移动中',
   departing: '离开中',
@@ -98,6 +102,18 @@ export function EmployeeDetail() {
             </button>
             <button className="action-btn" onClick={() => sendTo('lunch_area')}>
               去餐厅
+            </button>
+            <button className="action-btn" onClick={() => sendTo('phone_booth')}>
+              打电话
+            </button>
+            <button className="action-btn" onClick={() => sendTo('supermarket')}>
+              去超市
+            </button>
+            <button className="action-btn" onClick={() => sendTo('restroom')}>
+              卫生间
+            </button>
+            <button className="action-btn" onClick={() => sendTo('gym')}>
+              去健身
             </button>
           </div>
         </div>
