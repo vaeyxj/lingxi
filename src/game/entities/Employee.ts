@@ -77,7 +77,7 @@ export class Employee extends Phaser.GameObjects.Container {
 
     // Shadow - right under feet
     const shadow = scene.add.ellipse(0, 6, 10, 4, 0x000000, 0.25);
-    this.add(this.characterSprite);
+    this.add(shadow);
 
     // Name label - above head (use higher resolution + scale down for crisp text)
     this.nameLabel = scene.add.text(0, -18, data.name, {
@@ -96,7 +96,8 @@ export class Employee extends Phaser.GameObjects.Container {
 
     // Thought bubble
     this.thoughtBubble = scene.add.text(8, -20, '', {
-      fontSize: '10px',
+      fontSize: '14px',
+      fontFamily: '-apple-system, "PingFang SC", "Microsoft YaHei", sans-serif',
     });
     this.thoughtBubble.setOrigin(0, 1);
     this.add(this.thoughtBubble);

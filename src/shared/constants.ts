@@ -1,7 +1,9 @@
 export const TILE_SIZE = 16;
 export const MAP_COLS = 50;
 export const MAP_ROWS = 32;
-export const DISPLAY_SCALE = 4;
+export const DISPLAY_SCALE = 2;
+export const ZOOM_MIN = 1.0;
+export const ZOOM_MAX = 6;
 
 export const MAP_WIDTH_PX = MAP_COLS * TILE_SIZE;
 export const MAP_HEIGHT_PX = MAP_ROWS * TILE_SIZE;
