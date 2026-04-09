@@ -159,6 +159,7 @@ export class OfficeScene extends Phaser.Scene {
         const y = row * TILE_SIZE + TILE_SIZE / 2;
 
         const tile = this.add.image(x, y, 'tileset', tileIndex);
+        tile.setScale(0.5);
         tile.setDepth(depth);
       }
     }
@@ -184,15 +185,18 @@ export class OfficeScene extends Phaser.Scene {
       const cy = (zone.bounds.y + zone.bounds.height / 2) * TILE_SIZE;
 
       const text = this.add.text(cx, zone.bounds.y * TILE_SIZE + TILE_SIZE + 3, label, {
-        fontSize: '6px',
-        fontFamily: 'monospace',
+        fontSize: '20px',
+        fontFamily: '-apple-system, "PingFang SC", "Microsoft YaHei", sans-serif',
         color: '#aabbcc',
         stroke: '#000000',
-        strokeThickness: 1.5,
+        strokeThickness: 4,
+        resolution: 2,
       });
+      text.setScale(0.3);
       text.setOrigin(0.5, 0);
       text.setAlpha(0.6);
       text.setDepth(20);
+      text.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
     }
   }
 
@@ -254,7 +258,7 @@ export class OfficeScene extends Phaser.Scene {
 
     // Zoom with mouse wheel
     this.input.on('wheel', (_pointer: any, _gameObjects: any, _dx: number, dy: number) => {
-      const newZoom = Phaser.Math.Clamp(this.cameras.main.zoom - dy * 0.002, 2.5, 8);
+      const newZoom = Phaser.Math.Clamp(this.cameras.main.zoom - dy * 0.003, 1.0, 6);
       this.cameras.main.setZoom(newZoom);
     });
 
@@ -284,7 +288,7 @@ export class OfficeScene extends Phaser.Scene {
   }
 
   private adjustZoom(delta: number): void {
-    const newZoom = Phaser.Math.Clamp(this.cameras.main.zoom + delta, 2.5, 8);
+    const newZoom = Phaser.Math.Clamp(this.cameras.main.zoom + delta, 1.0, 6);
     this.cameras.main.setZoom(newZoom);
   }
 

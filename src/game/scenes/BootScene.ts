@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 
-const SPRITE_TILE_SIZE = 16;
+const SPRITE_TILE_SIZE = 32;
 const CHARACTER_FRAME_W = 32;
 const CHARACTER_FRAME_H = 48;
 
@@ -16,13 +16,13 @@ export class BootScene extends Phaser.Scene {
       '加载中...',
       {
         fontSize: '24px',
-        fontFamily: 'monospace',
+        fontFamily: '-apple-system, "PingFang SC", "Microsoft YaHei", sans-serif',
         color: '#ffffff',
       }
     );
     text.setOrigin(0.5);
 
-    // Load tileset spritesheet (20 frames, 32x32 each)
+    // Load tileset spritesheet (20 frames, 16x16 each)
     this.load.spritesheet('tileset', 'assets/tileset.png', {
       frameWidth: SPRITE_TILE_SIZE,
       frameHeight: SPRITE_TILE_SIZE,
